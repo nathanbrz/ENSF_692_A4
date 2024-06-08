@@ -33,10 +33,12 @@ class Breed_stats:
         """
         years_on_top = []
         
+        #Loop through the dataframe per year, slicing for that year, checking if the breed is in that sclided dataframe
+        #and if so, appends the year to a list.
         for value in df.index.get_level_values('Year').unique():
             idx = pd.IndexSlice
-            year_level = df.loc[idx[value],:]
-            if breed in year_level.index.get_level_values('Breed'):
+            year_level_df = df.loc[idx[value],:]
+            if breed in year_level_df.index.get_level_values('Breed'):
                 years_on_top.append(value)
 
         return years_on_top
@@ -73,14 +75,19 @@ class Breed_stats:
             list: A list of percentages representing the breed's registration out of the total percentage for each year.
         """
         idx = pd.IndexSlice
-        percentage_per_year = []
-        df_breed = df.loc[idx[:, :, breed], :] #get the years the breed was shown in and display the percentage for those
+        percentage_per_year = [] # list where we will store the results.
+        df_breed = df.loc[idx[:, :, breed], :] #get the data for the breed.
+
+        # Loop for the years present in the full dataframe.
         for value in df.index.get_level_values('Year').unique():
-            year_df = df.loc[idx[value], :]
+            year_df = df.loc[idx[value], :] # Index slice for current year in the loop.
             year_sum = np.nansum(year_df['Total'])
 
+            # To continue check if the current year is present in the breed dataframe because 
+            # some breeds don't show up in all years.
             if value in df_breed.index.get_level_values('Year').unique():
 
+                # Slice and get total sum for the breed in that year.
                 breed_df = df.loc[idx[value, :, breed], :]
                 breed_sum = np.nansum(breed_df['Total'])
 
@@ -103,12 +110,12 @@ class Breed_stats:
             float: The percentage of the breed's registration across all years.
         """
         idx = pd.IndexSlice
-        df_count = np.nansum(df['Total'])
+        reg_sum = np.nansum(df['Total'])
 
         breed_df = df.loc[idx[:, :, breed], :]
-        breed_count = np.nansum(breed_df['Total'])
+        breed_sum = np.nansum(breed_df['Total'])
 
-        percentage_for_breed = breed_count / df_count
+        percentage_for_breed = breed_sum / reg_sum
 
         return percentage_for_breed
     
@@ -128,8 +135,8 @@ class Breed_stats:
 
         df = df.loc[idx[:, :, breed], :]
         month_counts = df.groupby(level= 'Month').count()
-        max_value_count = month_counts['Total'].max()
-        top_months = month_counts[month_counts['Total'] == max_value_count]
+        month_counts_max = month_counts['Total'].max()
+        top_months = month_counts[month_counts['Total'] == month_counts_max]
         top_months = top_months.index.get_level_values('Month')
 
         return top_months
@@ -179,6 +186,7 @@ def DataFrame_creation (dataframe):
     """
     df = pd.read_excel(dataframe)
     df.set_index(['Year', 'Month', 'Breed'], inplace=True)
+    
     return df
 
 def user_entry_handdler(df):
