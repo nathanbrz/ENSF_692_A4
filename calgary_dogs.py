@@ -1,23 +1,38 @@
-# calgary_dogs.py
-# AUTHOR NAME
-#
-# A terminal-based application for computing and printing statistics based on given input.
-# Detailed specifications are provided via the Assignment 4 README file.
-# You must include the main listed below. You may add your own additional classes, functions, variables, etc. 
-# You may import any modules from the standard Python library.
-# Remember to include docstrings and comments.
+'''
+Dogs of Calgary Data Analysis
+
+AUTHOR: Nathan De Oliveira
+DATE: 2024-06-08
+VERSION: 1.0
+
+This module provides a terminal-based application for computing and printing statistics based on given input.
+It allows users to input a specific dog breed and generates various statistics.
+
+The data is read from an Excel file with a multi-index structure, and the module utilizes pandas and numpy for 
+data manipulation and analysis.
+'''
 import numpy as np
 import pandas as pd
 
 class Breed_stats:
+    """
+    A class to perform various statistical analyses on dog breed data with static methods. Has no instance varirables.
+    """
 
     @staticmethod
     def breed_year_top(breed, df):
-        # Top Years
+        """
+        Determine the years in which a particular breed was registered.
+
+        Args:
+            breed (str): The breed of dog to analyze.
+            df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+
+        Returns:
+            list: A list of years in which the breed was registered.
+        """
         years_on_top = []
         
-        df = DataFrame_creation("CalgaryDogBreeds.xlsx")
-
         for value in df.index.get_level_values('Year').unique():
             idx = pd.IndexSlice
             year_level = df.loc[idx[value],:]
@@ -27,6 +42,16 @@ class Breed_stats:
         return years_on_top
     @staticmethod
     def breed_total_reg(breed, df):
+        """
+        Calculate the total number of registrations for a particular breed.
+
+        Args:
+            breed (str): The breed of dog to analyze.
+            df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+
+        Returns:
+            int: The total number of registrations for the breed.
+        """
         idx = pd.IndexSlice
 
         df = df.loc[idx[:, :, breed], :]
@@ -37,6 +62,16 @@ class Breed_stats:
     
     @staticmethod
     def breed_percentage_years(breed, df):
+        """
+        Calculate the percentage of a breed's registration out of the total percentage for each year.
+
+        Args:
+            breed (str): The breed of dog to analyze.
+            df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+
+        Returns:
+            list: A list of percentages representing the breed's registration out of the total percentage for each year.
+        """
         idx = pd.IndexSlice
         percentage_per_year = []
         df_breed = df.loc[idx[:, :, breed], :] #get the years the breed was shown in and display the percentage for those
@@ -57,6 +92,16 @@ class Breed_stats:
     
     @staticmethod
     def breed_percentage_all_years(breed, df):
+        """
+        Calculates and print the percentage of selected breed registrations out of the total three-year percentage.
+
+        Args:
+            breed (str): The breed of dog to analyze.
+            df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+
+        Returns:
+            float: The percentage of the breed's registration across all years.
+        """
         idx = pd.IndexSlice
         df_count = np.nansum(df['Total'])
 
@@ -69,6 +114,16 @@ class Breed_stats:
     
     @staticmethod
     def breed_popular_months(breed, df):
+        """
+        Finds the months that were most popular for the selected breed registrations.
+
+        Args:
+            breed (str): The breed of dog to analyze.
+            df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+
+        Returns:
+            list: A list of the most popular months for the breed's registration (months that tie in max count in the list).
+        """
         idx = pd.IndexSlice
 
         df = df.loc[idx[:, :, breed], :]
@@ -81,6 +136,13 @@ class Breed_stats:
     
     @staticmethod
     def print_all_stats(df, user_input):
+        """
+        Print all the statistics in this class for a given breed.
+
+        Args:
+            df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+            user_input (str): The breed of dog to analyze.
+        """
         # Top years for that breed
         breed_years = Breed_stats.breed_year_top(user_input, df)
         print(f"The {user_input} was found in the top breeds for years: {', '.join(str(i) for i in breed_years)}")
@@ -106,11 +168,26 @@ class Breed_stats:
     
 
 def DataFrame_creation (dataframe):
+    """
+    Create a DataFrame from an Excel file and sets the multi-index correctly.
+
+    Args:
+        dataframe (str): The path to the Excel file.
+
+    Returns:
+        pd.DataFrame: The created DataFrame with multi-index.
+    """
     df = pd.read_excel(dataframe)
     df.set_index(['Year', 'Month', 'Breed'], inplace=True)
     return df
 
 def user_entry_handdler(df):
+    """
+    Handle user input for breed entry and print statistics.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+    """
     while True:
         user_input = input("Please enter a dog breed: ")
         user_input = user_input.upper()
