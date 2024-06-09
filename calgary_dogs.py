@@ -29,7 +29,7 @@ class Breed_stats:
             df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
 
         Returns:
-            list: A list of years in which the breed was registered.
+            years_on_top (list): A list of years in which the breed was registered.
         """
         years_on_top = []
         
@@ -52,7 +52,7 @@ class Breed_stats:
             df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
 
         Returns:
-            int: The total number of registrations for the breed.
+            sum_of_total (int): The total number of registrations for the breed.
         """
         idx = pd.IndexSlice
 
@@ -72,7 +72,7 @@ class Breed_stats:
             df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
 
         Returns:
-            list: A list of percentages representing the breed's registration out of the total percentage for each year.
+            percentage_per_year (list): A list of percentages representing the breed's registration out of the total percentage for each year.
         """
         idx = pd.IndexSlice
         percentage_per_year = [] # list where we will store the results.
@@ -107,7 +107,7 @@ class Breed_stats:
             df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
 
         Returns:
-            float: The percentage of the breed's registration across all years.
+            percentage_for_breed (float): The percentage of the breed's registration across all years.
         """
         idx = pd.IndexSlice
         reg_sum = np.nansum(df['Total'])
@@ -129,7 +129,7 @@ class Breed_stats:
             df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
 
         Returns:
-            list: A list of the most popular months for the breed's registration (months that tie in max count in the list).
+            top_months (list): A list of the most popular months for the breed's registration (months that tie in max count in the list).
         """
         idx = pd.IndexSlice
 
@@ -149,6 +149,9 @@ class Breed_stats:
         Args:
             df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
             user_input (str): The breed of dog to analyze.
+
+        Returns:
+            None
         """
         # Top years for that breed
         breed_years = Breed_stats.breed_year_top(user_input, df)
@@ -182,11 +185,11 @@ def DataFrame_creation (dataframe):
         dataframe (str): The path to the Excel file.
 
     Returns:
-        pd.DataFrame: The created DataFrame with multi-index.
+        df (pd.DataFrame): The created DataFrame with multi-index.
     """
     df = pd.read_excel(dataframe)
     df.set_index(['Year', 'Month', 'Breed'], inplace=True)
-    
+
     return df
 
 def user_entry_handdler(df):
@@ -195,11 +198,16 @@ def user_entry_handdler(df):
 
     Args:
         df (pd.DataFrame): The DataFrame containing breed registration with hierarchical indexes year, month, breed.
+
+    Returns:
+        None
     """
     while True:
+        # User input stage
         user_input = input("Please enter a dog breed: ")
         user_input = user_input.upper()
 
+        # Data anaylsis stage
         try:
             if user_input in df.index.get_level_values("Breed"):
                 Breed_stats.print_all_stats(df, user_input)
@@ -221,7 +229,7 @@ def main():
 
     # User input stage
     # Data anaylsis stage
-    user_entry_handdler(df)
+    user_entry_handdler(df) # both input and analysis are handdled in this function. check function.
 
 if __name__ == '__main__':
     main()
