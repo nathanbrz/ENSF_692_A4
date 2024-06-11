@@ -36,7 +36,7 @@ class Breed_stats:
         #Loop through the dataframe per year, slicing for that year, checking if the breed is in that sclided dataframe
         #and if so, appends the year to a list.
         for value in df.index.get_level_values('Year').unique():
-            idx = pd.IndexSlice
+            idx = pd.IndexSlice # IndexSlice object
             year_level_df = df.loc[idx[value],:]
             if breed in year_level_df.index.get_level_values('Breed'):
                 years_on_top.append(value)
@@ -131,12 +131,12 @@ class Breed_stats:
         Returns:
             top_months (list): A list of the most popular months for the breed's registration (months that tie in max count in the list).
         """
-        idx = pd.IndexSlice
+        idx = pd.IndexSlice 
 
         df = df.loc[idx[:, :, breed], :]
-        month_counts = df.groupby(level= 'Month').count()
+        month_counts = df.groupby(level= 'Month').count() # Using groupby method to get count for each month.
         month_counts_max = month_counts['Total'].max()
-        top_months = month_counts[month_counts['Total'] == month_counts_max]
+        top_months = month_counts[month_counts['Total'] == month_counts_max] # Used masking
         top_months = top_months.index.get_level_values('Month')
 
         return top_months
@@ -188,7 +188,7 @@ def DataFrame_creation (dataframe):
         df (pd.DataFrame): The created DataFrame with multi-index.
     """
     df = pd.read_excel(dataframe)
-    df.set_index(['Year', 'Month', 'Breed'], inplace=True)
+    df.set_index(['Year', 'Month', 'Breed'], inplace=True) #Make the df multi indexed
 
     return df
 
